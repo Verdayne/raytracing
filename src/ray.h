@@ -2,7 +2,13 @@
 #ifndef RAYTRACING_RAY_H
 #define RAYTRACING_RAY_H
 
+#include <random>
 #include "vec3.h"
+
+
+std::random_device device;
+std::mt19937 rng(device());
+std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 
 struct Ray {
     Vec3 origin, direction;
@@ -25,6 +31,15 @@ float hit_sphere(const Vec3& center, float radius, const Ray& ray) {
     if (discriminant < 0) return -1.0f;
 
     return (-b - std::sqrt(discriminant)) / (2.0f * a);
+}
+
+Vec3 random_in_unit_sphere() {
+    
+    Vec3 point;
+    do {
+        point = 2.0f * Vec3(distribution(rng), distribution(rng), distribution(rng)) - vec3::ONE;
+    } while (point.squared_length() >= 1.0f);
+    return point;
 }
 
 #endif //RAYTRACING_RAY_H

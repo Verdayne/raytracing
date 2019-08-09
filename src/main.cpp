@@ -9,8 +9,9 @@
 Vec3 color(const Ray& ray, Hitable *world) {
     HitRecord record;
 
-    if (world->hit(ray, 0.0f, MAXFLOAT, record)) {
-        return 0.5f * (record.normal + vec3::ONE);
+    if (world->hit(ray, 0.001f, MAXFLOAT, record)) {
+        Vec3 target = record.p + record.normal + random_in_unit_sphere();
+        return 0.5f * color(Ray(record.p, target-record.p), world);
     }
 
     Vec3 unitDirection = unit_vector(ray.direction);
@@ -51,6 +52,7 @@ int main()
             }
 
             col /= float(ns);
+            col = Vec3(std::sqrt(col.x), std::sqrt(col.y), std::sqrt(col.z));
 
             int r = int(255.99f * col.x);
             int g = int(255.99f * col.y);
