@@ -32,14 +32,4 @@ float hit_sphere(const Vec3& center, float radius, const Ray& ray) {
 
     return (-b - std::sqrt(discriminant)) / (2.0f * a);
 }
-
-Vec3 random_in_unit_sphere() {
-    
-    Vec3 point;
-    do {
-        point = 2.0f * Vec3(distribution(rng), distribution(rng), distribution(rng)) - vec3::ONE;
-    } while (point.squared_length() >= 1.0f);
-    return point;
-}
-
 #endif //RAYTRACING_RAY_H

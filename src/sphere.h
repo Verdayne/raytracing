@@ -6,10 +6,12 @@
 
 struct Sphere : public Hitable {
     Sphere() = default;
-    Sphere(Vec3 _center, float _radius) : center(_center), radius(_radius) {}
+    Sphere(Vec3 _center, float _radius, Material *material) : center(_center), radius(_radius), mat_ptr(material) {}
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
+    
     Vec3 center;
     float radius;
+    Material *mat_ptr;
 };
 
 bool Sphere::hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const {
@@ -25,6 +27,7 @@ bool Sphere::hit(const Ray& ray, float tMin, float tMax, HitRecord& record) cons
             record.t = temp;
             record.p = ray.point_at_parameter(temp);
             record.normal = (record.p - center) / radius;
+            record.mat_ptr = mat_ptr;
             return true;
         }
 
@@ -34,6 +37,7 @@ bool Sphere::hit(const Ray& ray, float tMin, float tMax, HitRecord& record) cons
             record.t = temp;
             record.p = ray.point_at_parameter(record.t);
             record.normal = (record.p - center) / radius;
+            record.mat_ptr = mat_ptr;
             return true;
         } 
     }
