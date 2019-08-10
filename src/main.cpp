@@ -37,7 +37,12 @@ int main()
     outfile << "P3\n" << nx << " " << ny << "\n255\n";
 
     const int SIZE = 5;
+   // float R = std::cos(M_PI/4);
     Hitable *list[SIZE];
+
+    //list[0] = new Sphere(Vec3(-R, 0.0f, -1), R, new Lambertian(Vec3(0.0f, 0.0f, 1.0f)));
+    //list[1] = new Sphere(Vec3(R, 0.0f, -1), R, new Lambertian(Vec3(1.0f, 0.0f, 0.0f)));
+    
     list[0] = new Sphere(-vec3::Z, 0.5f, new Lambertian(Vec3(0.1f, 0.2f, 0.5f)));
     list[1] = new Sphere(Vec3(0.0f, -100.5f, -1.0f), 100.0f, new Lambertian(Vec3(0.8f, 0.8f, 0.0f)));
     list[2] = new Sphere(Vec3(1.0f, 0.0f, -1.0f), 0.5f, new Metal(Vec3(0.8f, 0.6f, 0.2f)));
@@ -45,7 +50,7 @@ int main()
     list[4] = new Sphere(Vec3(-1.0f, 0.0f, -1.0f), 0.45f, new Dielectric(1.5f));
     Hitable *world = new HitableList(list, SIZE);
 
-    Camera camera;
+    Camera camera(Vec3(-2.0f, 2.0f, 1.0f), -vec3::Z, vec3::Y, 90.0f, float(nx)/float(float(ny)));
 
     for (int j = ny -1; j >= 0; --j) {
         for (int i = 0; i < nx; ++i) {
