@@ -21,17 +21,17 @@ bool Sphere::hit(const Ray& ray, float tMin, float tMax, HitRecord& record) cons
     float c = dot(oc, oc) - radius * radius;
     float discriminant = b * b - a * c;
 
-    if (discriminant > 0) {
-        float temp = (-b - std::sqrt(discriminant)) / a;
+    if (discriminant > 0.f) {
+        float temp = (-b - sqrt(discriminant)) / a;
         if(temp < tMax && temp > tMin) {
             record.t = temp;
-            record.p = ray.point_at_parameter(temp);
+            record.p = ray.point_at_parameter(record.t);
             record.normal = (record.p - center) / radius;
             record.mat_ptr = mat_ptr;
             return true;
         }
 
-        temp = (-b + std::sqrt(discriminant)) / a;
+        temp = (-b + sqrt(discriminant)) / a;
         if (temp < tMax && temp > tMin)
         {
             record.t = temp;

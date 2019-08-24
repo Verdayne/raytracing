@@ -2,6 +2,7 @@
 #define RAYTRACING_MATERIAL_H
 
 #include "hitable.h"
+#include "util.h"
 
 struct Material {
     virtual bool scatter(const Ray& rayIn, const HitRecord& record, Vec3& attenuation, Ray& scattered) const = 0;
@@ -15,28 +16,27 @@ Vec3 reflect(const Vec3& v, const Vec3& n)
 bool refract(const Vec3& v, const Vec3& n, float ni_over_nt, Vec3& refracted) {
     Vec3 uv = unit_vector(v);
     float dt = dot(uv, n);
-    float discriminant = 1.0f - ni_over_nt * ni_over_nt * (1.0f - dt * dt);
+    float discriminant = 1.f - ni_over_nt * ni_over_nt * (1.f - dt * dt);
 
-    if (discriminant > 0.0f) {
-        refracted = ni_over_nt * (uv - n * dt) - n * std::sqrt(discriminant);
+    if (discriminant > 0.f) {
+        refracted = ni_over_nt * (uv - n * dt) - n * sqrt(discriminant);
         return true;
     }
     return false;
 }
 
 float schlick(float cosine, float ref_idx) {
-    float r0 = (1.0f - ref_idx) / (1.0f + ref_idx);
+    float r0 = (1.f - ref_idx) / (1.f + ref_idx);
     r0 = r0 * r0;
-    return r0 + (1.0f - r0) * std::pow(1.0f - cosine, 5.0f);
+    return r0 + (1.f - r0) * std::pow(1.f - cosine, 5.f);
 }
 
 
 Vec3 random_in_unit_sphere() {
-    
     Vec3 point;
     do {
-        point = 2.0f * Vec3(distribution(rng), distribution(rng), distribution(rng)) - vec3::ONE;
-    } while (point.squared_length() >= 1.0f);
+        point = 2.f * Vec3(randf(), randf(), randf()) - vec3::ONE;
+    } while (point.squared_length() >= 1.f);
     return point;
 }
 
@@ -53,12 +53,12 @@ struct Lambertian : public Material {
 };
 
 struct Metal : public Material {
-    Metal(const Vec3& _albedo, float _fuzz = 0.0f) : albedo(_albedo), fuzz(_fuzz) {}
+    Metal(const Vec3& _albedo, float _fuzz = 0.f) : albedo(_albedo), fuzz(_fuzz) {}
     virtual bool scatter(const Ray& rayIn, const HitRecord& record, Vec3& attenuation, Ray& scattered) const {
         Vec3 reflected = reflect(unit_vector(rayIn.direction), record.normal);
         scattered = Ray(record.p, reflected + fuzz * random_in_unit_sphere());
         attenuation = albedo;
-        return (dot(scattered.direction, record.normal) > 0);
+        return (dot(scattered.direction, record.normal) > 0.f);
     }
 
     Vec3 albedo;
@@ -72,20 +72,21 @@ struct Dielectric : public Material {
         Vec3 outward_normal;
         Vec3 reflected = reflect(rayIn.direction, record.normal);
         float ni_over_nt;
-        attenuation = Vec3(1.0f, 1.0f, 1.0f);
-        Vec3 refracted;
+        attenuation = vec3::ONE;
+        Vec3 refracted(vec3::ZERO);
 
         float reflect_prob;
         float cosine;
 
-        if (dot(rayIn.direction, record.normal) > 0.0f) {
+        if (dot(rayIn.direction, record.normal) > 0.f) {
             outward_normal = -record.normal;
             ni_over_nt = ref_idx;
-            cosine = ref_idx * dot(rayIn.direction, record.normal) / rayIn.direction.length();
+            cosine = dot(rayIn.direction, record.normal) / rayIn.direction.length();
+            cosine = sqrt(1.f - ref_idx * ref_idx * (1.f - cosine * cosine));
         }
         else {
             outward_normal = record.normal;
-            ni_over_nt = 1.0f / ref_idx;
+            ni_over_nt = 1.f / ref_idx;
             cosine = -dot(rayIn.direction, record.normal) / rayIn.direction.length();
         }
 
@@ -93,11 +94,10 @@ struct Dielectric : public Material {
             reflect_prob = schlick(cosine, ref_idx);
         }
         else {
-            scattered = Ray(record.p, reflected);
-            reflect_prob = 1.0f;
+            reflect_prob = 1.f;
         }
 
-        if(distribution(rng) < reflect_prob) {
+        if(randf() < reflect_prob) {
             scattered = Ray(record.p, reflected);
         }
         else {

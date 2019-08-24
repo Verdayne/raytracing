@@ -4,7 +4,7 @@
 #define RAYTRACING_VEC3_H
 
 #include <math.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <iostream>
 
 struct Vec3 {
@@ -79,7 +79,7 @@ Vec3& Vec3::operator*=(const float t) {
 };
 
 Vec3& Vec3::operator/=(const float t) {
-    float k = 1.0f / t;
+    float k = 1.f / t;
     x *= k;
     y *= k;
     z *= k;
@@ -91,7 +91,7 @@ float Vec3::length() const { return std::sqrt(squared_length()); }
 float Vec3::squared_length() const { return x * x + y * y + z * z; };
 
 void Vec3::normalize() {
-    float k = 1.0f / length();
+    float k = 1.f / length();
     x *= k;
     y *= k;
     z *= k;
@@ -121,21 +121,21 @@ Vec3 cross(const Vec3& v1, const Vec3& v2)
 {
     return Vec3(
         (v1.y * v2.z - v1.z * v2.y),
-        -(v1.x * v2.z - v1.z * v2.x),
+        (-(v1.x * v2.z - v1.z * v2.x)),
         (v1.x * v2.y - v1.y * v2.x)
     );
 }
 
 Vec3 unit_vector(Vec3 v)
 {
-    return v / v.length();;
+    return v / v.length();
 }
 
 namespace vec3 {
-    static const Vec3 X = { 1.0f, 0.0f, 0.0f };
-    static const Vec3 Y = { 0.0f, 1.0f, 0.0f };
-    static const Vec3 Z = { 0.0f, 0.0f, 1.0f };
-    static const Vec3 ONE = { 1.0f, 1.0f, 1.0f };
-    static const Vec3 ZERO = { 0.0f, 0.0f, 0.0f };
+    static const Vec3 X = { 1.f, 0.f, 0.f };
+    static const Vec3 Y = { 0.f, 1.f, 0.f };
+    static const Vec3 Z = { 0.f, 0.f, 1.f };
+    static const Vec3 ONE = { 1.f, 1.f, 1.f };
+    static const Vec3 ZERO = { 0.f, 0.f, 0.f };
 }
 #endif //RAYTRACING_VEC3_H
